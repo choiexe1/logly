@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    @Transactional
     public Member save(Member member) {
         memberRepository.existsByUsername(member.getUsername());
         memberRepository.existsByNickname(member.getNickname());

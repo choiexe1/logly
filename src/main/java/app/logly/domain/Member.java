@@ -1,5 +1,6 @@
 package app.logly.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,11 +19,34 @@ public class Member {
     @GeneratedValue
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(unique = true, nullable = false)
     private String nickname;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
+    private boolean subscribeNewsletter;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static Member of(String username, String nickname, String email, String password,
+                            Boolean subscribeNewsletter) {
+        Member member = new Member();
+        member.username = username;
+        member.nickname = nickname;
+        member.email = email;
+        member.password = password;
+        member.createdAt = LocalDateTime.now();
+        member.subscribeNewsletter = subscribeNewsletter;
+
+        return member;
+    }
 }
