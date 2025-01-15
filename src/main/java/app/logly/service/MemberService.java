@@ -1,8 +1,10 @@
 package app.logly.service;
 
 import app.logly.domain.Member;
+import app.logly.exception.EmailInUsedException;
+import app.logly.exception.NicknameInUsedException;
+import app.logly.exception.UsernameInUsedException;
 import app.logly.repository.MemberRepository;
-import jakarta.persistence.EntityExistsException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,13 @@ public class MemberService {
 
     public void validateExistsMember(String username, String nickname, String email) {
         if (memberRepository.existsByUsername(username)) {
-            throw new EntityExistsException("이미 사용중인 유저네임입니다.");
+            throw new UsernameInUsedException("이미 사용중인 유저네임입니다.");
         }
         if (memberRepository.existsByNickname(nickname)) {
-            throw new EntityExistsException("이미 사용중인 닉네임입니다.");
+            throw new NicknameInUsedException("이미 사용중인 닉네임입니다.");
         }
         if (memberRepository.existsByEmail(email)) {
-            throw new EntityExistsException("이미 사용중인 이메일입니다.");
+            throw new EmailInUsedException("이미 사용중인 이메일입니다.");
         }
     }
 }

@@ -58,7 +58,9 @@
                                     id="username"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{username}"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{username}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6 sm:col-span-3">
@@ -71,7 +73,9 @@
                                     id="nickname"
                                     th:field="*{nickname}"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{nickname}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6">
@@ -81,7 +85,9 @@
                                     id="email"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{email}"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{email}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6 sm:col-span-3">
@@ -93,7 +99,9 @@
                                     name="password"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{password}"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{password}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6 sm:col-span-3">
@@ -105,7 +113,10 @@
                                     type="password"
                                     id="confirmPassword"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                                    th:field="*{confirmPassword}"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{confirmPassword}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6">

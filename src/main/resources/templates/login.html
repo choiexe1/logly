@@ -35,7 +35,7 @@
                         Welcome to Logly ✍︎
                     </h1>
 
-                    <th:block th:unless="${registerd == true}">
+                    <th:block th:unless="${registered == true}">
                         <p class="mt-4 leading-relaxed text-gray-500">
                             로글리는 소중한 순간과 메시지를 기록하고 공유할 수 있는 공간입니다.
                         </p>
@@ -46,12 +46,12 @@
                     </th:block>
 
 
-                    <th:block th:if="${registerd == true}">
+                    <th:block th:if="${registered == true}">
                         <p class="mt-4 leading-relaxed text-gray-500">
                             🎉 <span class="text-blue-500">회원가입</span>이 완료되었어요. 🎉
                         </p>
 
-                        <p class="mt-4 leading-relaxed text-gray-500" th:if="${registerd == true}">
+                        <p class="mt-4 leading-relaxed text-gray-500" th:if="${registered == true}">
                             지금 바로 시작해보세요. 당신의 첫 글이 모두에게 영감을 줄지도 몰라요!
                         </p>
                     </th:block>
@@ -82,6 +82,7 @@
                                     name="password"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{password}"
+                                    th:errorclass="border-red-500"
                             />
                             <p th:errors="*{password}" class="error py-2"></p>
                         </div>

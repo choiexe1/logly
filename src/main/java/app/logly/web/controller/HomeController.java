@@ -1,6 +1,12 @@
 package app.logly.web.controller;
 
 import app.logly.domain.Member;
+import app.logly.exception.EmailInUsedException;
+import app.logly.exception.InvalidPasswordException;
+import app.logly.exception.NicknameInUsedException;
+import app.logly.exception.PasswordMismatchException;
+import app.logly.exception.UserNotFoundException;
+import app.logly.exception.UsernameInUsedException;
 import app.logly.service.AuthService;
 import app.logly.web.SessionManager;
 import app.logly.web.annotation.ReturnTemplateOnError;
@@ -40,7 +46,15 @@ public class HomeController {
         String username = form.username();
         String password = form.password();
 
-        authService.authenticate(username, password);
+        try {
+            authService.authenticate(username, password);
+        } catch (UserNotFoundException e) {
+            bindingResult.rejectValue("username", UserNotFoundException.ERROR_CODE);
+            return "login";
+        } catch (InvalidPasswordException e) {
+            bindingResult.rejectValue("password", InvalidPasswordException.ERROR_CODE);
+            return "login";
+        }
 
         Optional<HttpSession> session = SessionManager.get(username);
 
@@ -59,15 +73,37 @@ public class HomeController {
         return "register";
     }
 
-    @PostMapping("/register")
-    public String register(@ModelAttribute("form") RegisterForm form,
-                           RedirectAttributes redirectAttributes) {
-        Member member = Member
-                .of(form.username(), form.nickname(), form.email(), form.password(),
-                        form.subscribeNewsletter());
+    // TODO: 로그인 후에 인터셉터로 세션 검증
 
-        authService.register(member);
-        redirectAttributes.addFlashAttribute("registerd", true);
+    @ReturnTemplateOnError("register")
+    @PostMapping("/register")
+    public String register(@Validated @ModelAttribute("form") RegisterForm form,
+                           BindingResult bindingResult,
+                           RedirectAttributes redirectAttributes) {
+
+        if (!form.password().equals(form.confirmPassword())) {
+            bindingResult.rejectValue("password", PasswordMismatchException.ERROR_CODE);
+            bindingResult.rejectValue("confirmPassword", PasswordMismatchException.ERROR_CODE);
+            return "register";
+        }
+
+        Member member = Member
+                .of(form.username(), form.nickname(), form.email(), form.password(), form.subscribeNewsletter());
+
+        try {
+            authService.register(member);
+        } catch (UsernameInUsedException e) {
+            bindingResult.rejectValue("username", UsernameInUsedException.ERROR_CODE);
+            return "register";
+        } catch (NicknameInUsedException e) {
+            bindingResult.rejectValue("nickname", NicknameInUsedException.ERROR_CODE);
+            return "register";
+        } catch (EmailInUsedException e) {
+            bindingResult.rejectValue("email", EmailInUsedException.ERROR_CODE);
+            return "register";
+        }
+
+        redirectAttributes.addFlashAttribute("registered", true);
         return "redirect:/login";
     }
 
