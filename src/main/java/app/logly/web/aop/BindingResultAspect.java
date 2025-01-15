@@ -42,8 +42,8 @@ public class BindingResultAspect {
 
     private BindingResult findBindingResult(Object[] args) {
         for (Object arg : args) {
-            if (arg instanceof BindingResult) {
-                return (BindingResult) arg;
+            if (arg instanceof BindingResult bindingResult) {
+                return bindingResult;
             }
         }
         return null;
