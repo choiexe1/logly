@@ -2,6 +2,8 @@ package app.logly.service;
 
 import app.logly.domain.Member;
 import app.logly.repository.MemberRepository;
+import jakarta.persistence.EntityExistsException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,26 @@ public class MemberService {
 
     @Transactional
     public Member save(Member member) {
-        memberRepository.existsByUsername(member.getUsername());
-        memberRepository.existsByNickname(member.getNickname());
-        memberRepository.existsByEmail(member.getEmail());
-
         return memberRepository.save(member);
+    }
+
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
+    }
+
+    public void validateExistsMember(String username, String nickname, String email) {
+        if (memberRepository.existsByUsername(username)) {
+            throw new EntityExistsException("이미 사용중인 유저네임입니다.");
+        }
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new EntityExistsException("이미 사용중인 닉네임입니다.");
+        }
+        if (memberRepository.existsByEmail(email)) {
+            throw new EntityExistsException("이미 사용중인 이메일입니다.");
+        }
     }
 }

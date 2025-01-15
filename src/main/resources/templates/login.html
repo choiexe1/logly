@@ -68,7 +68,9 @@
                                     id="username"
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{username}"
+                                    th:errorclass="border-red-500"
                             />
+                            <p th:errors="*{username}" class="error py-2"></p>
                         </div>
 
                         <div class="col-span-6 sm:col-span-3">
@@ -81,6 +83,7 @@
                                     class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
                                     th:field="*{password}"
                             />
+                            <p th:errors="*{password}" class="error py-2"></p>
                         </div>
                         <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
                             <button type="submit"

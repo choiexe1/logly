@@ -1,13 +1,15 @@
 package app.logly.repository;
 
 import app.logly.domain.Member;
-import jakarta.persistence.EntityExistsException;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    boolean existsByUsername(String username) throws EntityExistsException;
+    Optional<Member> findByUsername(String username);
 
-    boolean existsByEmail(String email) throws EntityExistsException;
+    boolean existsByUsername(String username);
 
-    boolean existsByNickname(String nickname) throws EntityExistsException;
+    boolean existsByEmail(String email);
+
+    boolean existsByNickname(String nickname);
 }

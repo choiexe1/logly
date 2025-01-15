@@ -1,10 +1,12 @@
 package app.logly.web.form;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record RegisterForm(
-        String username,
-        String nickname,
-        String email,
-        String password,
+        @NotBlank String username,
+        @NotBlank String nickname,
+        @NotBlank String email,
+        @NotBlank String password,
         Boolean subscribeNewsletter
 ) {
 }

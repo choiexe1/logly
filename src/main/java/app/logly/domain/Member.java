@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "members")
@@ -29,6 +30,7 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
+    @Setter
     private String password;
 
     private boolean subscribeNewsletter;

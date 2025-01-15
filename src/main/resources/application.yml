@@ -5,3 +5,13 @@ server:
 spring:
   application:
     name: logly
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+  messages:
+    basename: errors
+    encoding: UTF-8
+  h2:
+    console:
+      enabled: true
