@@ -102,7 +102,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(@SID Long id, Model model) {
-        // TODO: 세션 매니저에서 조회하는 인터셉터 구현
         Member member = memberService.findById(id).orElseThrow();
 
         model.addAttribute("member", member);
