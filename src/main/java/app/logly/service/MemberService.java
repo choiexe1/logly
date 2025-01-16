@@ -3,6 +3,7 @@ package app.logly.service;
 import app.logly.domain.Member;
 import app.logly.exception.EmailInUsedException;
 import app.logly.exception.NicknameInUsedException;
+import app.logly.exception.UserNotFoundException;
 import app.logly.exception.UsernameInUsedException;
 import app.logly.repository.MemberRepository;
 import java.util.Optional;
@@ -25,6 +26,11 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
+    public Member findByIdOrThrow(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("회원을 찾을 수 없습니다."));
+    }
+
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
@@ -39,5 +45,12 @@ public class MemberService {
         if (memberRepository.existsByEmail(email)) {
             throw new EmailInUsedException("이미 사용중인 이메일입니다.");
         }
+    }
+
+    public boolean isEmailVerified(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("회원을 찾을 수 없습니다."));
+
+        return member.isEmailVerified();
     }
 }

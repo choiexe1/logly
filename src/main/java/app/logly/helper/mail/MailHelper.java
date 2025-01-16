@@ -15,7 +15,6 @@ public class MailHelper {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
-    @Async("mailExecutor")
     public void send(String to, String subject, String body) {
         MimeMessagePreparator messagePreparator =
                 mimeMessage -> {
@@ -30,11 +29,14 @@ public class MailHelper {
     }
 
     @Async("mailExecutor")
-    public void sendVerifyCode(String to, int verifyCode) {
+    public void sendVerifyCode(String to, int verificationCode) {
         Context context = new Context();
-        context.setVariable("verifyCode", verifyCode);
+
+        context.setVariable("verificationCode", verificationCode);
+        context.setVariable("to", to);
+
         String subject = "로글리 회원가입 인증 코드";
-        String body = templateEngine.process("email/verifyCode.html", context);
+        String body = templateEngine.process("email/verifyCodeTemplate.html", context);
         send(to, subject, body);
     }
 

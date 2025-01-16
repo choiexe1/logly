@@ -33,6 +33,9 @@ public class Member {
     @Setter
     private String password;
 
+    @Setter
+    private boolean emailVerified;
+    
     private boolean subscribeNewsletter;
 
     @Column(nullable = false)
@@ -48,6 +51,7 @@ public class Member {
         member.password = password;
         member.createdAt = LocalDateTime.now();
         member.subscribeNewsletter = subscribeNewsletter;
+        member.emailVerified = false;
 
         return member;
     }

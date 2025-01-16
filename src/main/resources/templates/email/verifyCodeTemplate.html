@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .hover-bg-blue-500:hover {
+          background-color: #3b82f6 !important
+        }
+        .hover-underline:hover {
+          text-decoration: underline !important
+        }
+        @media (max-width: 600px) {
+          .sm-h-8 {
+            height: 32px !important
+          }
+        }
+    </style>
+</head>
+<body>
+    <section
+            style="margin-left: auto; margin-right: auto; max-width: 336px; background-color: #fffffe; padding: 32px 24px">
+        <main style="margin-top: 32px">
+            <h2 style="color: #374151"> ✍︎ 로글리는 소중한 순간과 메시지를 기록하고 공유할 수 있는 공간입니다.</h2>
+            <p style="margin-top: 8px; line-height: 2; color: #4b5563">
+                인증 코드:
+            </p>
+            <div style="margin-top: 16px; display: flex; align-items: center; column-gap: 16px">
+                <p th:text="${verificationCode}"
+                   style="display: flex; height: 40px; width: 40px; align-items: center; justify-content: center; border-radius: 6px; border-width: 1px; border-color: #3b82f6; font-size: 24px; font-weight: 500; color: #3b82f6">
+                </p>
+            </div>
+            <p style="margin-top: 16px; line-height: 2; color: #4b5563">
+                이 코드는 5분 동안만 유효합니다.
+            </p>
+            <p style="margin-top: 32px; color: #4b5563">
+                감사합니다.<br>
+            </p>
+        </main>
+        <footer style="margin-top: 32px">
+            <p>
+                이 이메일은 <a href="#" class="hover-underline" target="_blank"
+                          style="color: #2563eb" th:text="${to}">email</a>으로 발송되었습니다.
+            </p>
+            <p>이메일을 더 이상 받고 싶지 않다면 <a href="#" class="hover-underline" style="color: #2563eb">구독 취소</a>하거나
+                <a href="#" class="hover-underline" style="color: #2563eb">이메일 환경설정을 관리</a>할 수 있습니다.</p>
+            <p style="margin-top: 12px; color: #6b7280">© Logly. All Rights Reserved.</p>
+        </footer>
+    </section>
+</body>
+</html>

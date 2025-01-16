@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('이메일 인증')}">
+</head>
+<body>
+    <form id="verificationForm" method="POST" th:object="${form}"
+          class="flex flex-col items-center justify-center min-h-screen mx-auto px-4 sm:px-6 lg:px-8">
+
+        <th:block th:unless="${resend}">
+            <h2 class="font-bold text-center text-lg sm:text-xl md:text-2xl">잠깐! 마지막 절차가 남았네요!</h2>
+            <p class="mt-2 leading-loose text-gray-600 text-center">
+                회원 가입 시 입력한 이메일 <span th:text="${email}" th:class="text-sm"></span> 으로 인증 코드를 발송했어요. 😊
+            </p>
+        </th:block>
+
+        <th:block th:if="${resend}">
+            <h2 class="font-bold text-center text-lg sm:text-xl md:text-2xl">인증 코드를 재전송 했어요!</h2>
+            <p class="mt-2 leading-loose text-gray-600 text-center">
+                인증 코드가 발송 되기까지 조금만 기다려주세요! 😊
+            </p>
+        </th:block>
+
+        <div class="flex items-center mt-4 gap-x-4 justify-center">
+            <input id="input1"
+                   class="flex items-center justify-center w-12 h-12 text-xl font-medium text-blue-500 border border-blue-500 rounded-md text-center"
+                   oninput="moveFocus(this, event)" maxlength="1" type="text"
+                   th:field="*{first}"
+            >
+            <input id="input2"
+                   class="flex items-center justify-center w-12 h-12 text-xl font-medium text-blue-500 border border-blue-500 rounded-md text-center"
+                   oninput="moveFocus(this, event)" maxlength="1" type="text"
+                   th:field="*{second}"
+            >
+            <input id="input3"
+                   class="flex items-center justify-center w-12 h-12 text-xl font-medium text-blue-500 border border-blue-500 rounded-md text-center"
+                   oninput="moveFocus(this, event)" maxlength="1" type="text"
+                   th:field="*{third}"
+            >
+            <input id="input4"
+                   class="flex items-center justify-center w-12 h-12 text-xl font-medium text-blue-500 border border-blue-500 rounded-md text-center"
+                   oninput="moveFocus(this, event)" maxlength="1" type="text"
+                   th:field="*{fourth}"
+            >
+        </div>
+
+        <div th:if="${#fields.hasErrors()}" class="mt-4">
+            <ul>
+                <li th:each="err : ${#fields.errors()}" th:text="${err}" class="error"></li>
+            </ul>
+        </div>
+
+        <div class="mt-2 text-center">
+            <p class="leading-loose text-gray-600">인증 코드는 이메일 발송 시점부터 5분간 유효해요.</p>
+            <p th:if="${#fields.hasErrors()}" class="leading-loose text-gray-600">
+                인증 코드에 문제가 발생했다면 <a th:href="@{/re-send}" class="text-blue-500">여기</a>를 눌러
+                재전송 할 수 있어요!</p>
+        </div>
+
+        <button type="submit"
+                class="px-6 py-2 mt-6 text-sm font-medium tracking-wider text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
+            인증하기
+        </button>
+    </form>
+
+
+    <script>
+        function moveFocus(currentInput, event) {
+            // 현재 입력값이 1글자일 경우
+            if (currentInput.value.length === 1) {
+                // 다음 인풋으로 포커스를 이동
+                let nextInput = currentInput.nextElementSibling;
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

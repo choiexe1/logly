@@ -1,4 +1,4 @@
-package app.logly.encryption;
+package app.logly.helper.encryption;
 
 import com.password4j.Password;
 import org.springframework.stereotype.Component;

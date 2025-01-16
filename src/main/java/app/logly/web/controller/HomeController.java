@@ -7,6 +7,9 @@ import app.logly.exception.NicknameInUsedException;
 import app.logly.exception.PasswordMismatchException;
 import app.logly.exception.UserNotFoundException;
 import app.logly.exception.UsernameInUsedException;
+import app.logly.exception.VerificationCodeNotMatchException;
+import app.logly.helper.mail.MailHelper;
+import app.logly.helper.verification.VerificationHelper;
 import app.logly.service.AuthService;
 import app.logly.service.MemberService;
 import app.logly.web.SessionManager;
@@ -14,6 +17,7 @@ import app.logly.web.annotation.ReturnTemplateOnError;
 import app.logly.web.annotation.SID;
 import app.logly.web.form.LoginForm;
 import app.logly.web.form.RegisterForm;
+import app.logly.web.form.VerificationCodeForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class HomeController {
     private final AuthService authService;
     private final MemberService memberService;
+    private final MailHelper mailHelper;
+    private final VerificationHelper verificationHelper;
 
     @GetMapping("/login")
     public String loginView(@ModelAttribute("form") LoginForm form) {
@@ -53,8 +59,12 @@ public class HomeController {
 
             HttpSession session = request.getSession();
             SessionManager.renewSession(member.getId(), session);
+            if (member.isEmailVerified()) {
+                return "redirect:/";
+            } else {
+                return "redirect:/verify";
+            }
 
-            return "redirect:/";
         } catch (UserNotFoundException e) {
             bindingResult.rejectValue("username", UserNotFoundException.ERROR_CODE);
             return "login";
@@ -62,6 +72,48 @@ public class HomeController {
             bindingResult.rejectValue("password", InvalidPasswordException.ERROR_CODE);
             return "login";
         }
+    }
+
+    @GetMapping("/verify")
+    public String verifyView(Model model, @SID Long id, @ModelAttribute("form") VerificationCodeForm form) {
+        Member member = memberService.findByIdOrThrow(id);
+        model.addAttribute("email", member.getEmail());
+
+        return "verify";
+    }
+
+    @PostMapping("/verify")
+    public String verify(@SID Long id, @Validated @ModelAttribute("form") VerificationCodeForm form,
+                         BindingResult bindingResult) {
+
+        if (form.first() == null || form.second() == null || form.third() == null || form.fourth() == null) {
+            bindingResult.reject(VerificationCodeNotMatchException.ERROR_CODE);
+            return "verify";
+        }
+
+        try {
+            verificationHelper.validateVerificationCodeMatch(id, form.merge());
+            authService.verifyEmail(id);
+            verificationHelper.removeVerificationCode(id);
+        } catch (VerificationCodeNotMatchException e) {
+            bindingResult.reject(VerificationCodeNotMatchException.ERROR_CODE);
+            return "verify";
+        }
+
+        return "redirect:/";
+    }
+
+    @GetMapping("re-send")
+    public String verifyResend(@SID Long id, RedirectAttributes redirectAttributes) {
+        Member member = memberService.findByIdOrThrow(id);
+
+        verificationHelper.removeVerificationCode(id);
+        int verificationCode = verificationHelper.generateVerificationCode(member.getId());
+        mailHelper.sendVerifyCode(member.getEmail(), verificationCode);
+
+        redirectAttributes.addFlashAttribute("resend", true);
+
+        return "redirect:/verify";
     }
 
     @GetMapping("/register")
@@ -86,6 +138,10 @@ public class HomeController {
 
         try {
             authService.register(member);
+
+            int verificationCode = verificationHelper.generateVerificationCode(member.getId());
+            mailHelper.sendVerifyCode(form.email(), verificationCode);
+
             redirectAttributes.addAttribute("registered", true);
             return "redirect:/login";
         } catch (UsernameInUsedException e) {
