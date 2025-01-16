@@ -41,6 +41,11 @@ dependencies {
      * 패스워드 암호화를 위한 라이브러리
      */
     implementation 'com.password4j:password4j:1.8.2'
+
+    /**
+     * 자바 메일 센더
+     */
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

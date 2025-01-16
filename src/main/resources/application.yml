@@ -4,12 +4,25 @@ server:
     session:
       tracking-modes: cookie
 spring:
+  config:
+    import: env.properties
   application:
     name: logly
   datasource:
     url: jdbc:h2:mem:testdb
     username: sa
     password:
+  mail:
+    host: ${email.smtp.host}
+    port: ${email.smtp.port}
+    username: ${email.username}
+    password: ${email.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   messages:
     basename: errors
     encoding: UTF-8
