@@ -7,12 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
     private static final Map<Long, HttpSession> sessionMap = new ConcurrentHashMap<>();
+    public static final String SESSION_MEMBER_ID = "sid";
 
     private SessionManager() {
     }
 
     public static void set(Long id, HttpSession session) {
-        session.setAttribute("id", id);
+        session.setAttribute(SESSION_MEMBER_ID, id);
         sessionMap.put(id, session);
     }
 

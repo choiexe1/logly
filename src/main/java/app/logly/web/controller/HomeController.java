@@ -11,6 +11,7 @@ import app.logly.service.AuthService;
 import app.logly.service.MemberService;
 import app.logly.web.SessionManager;
 import app.logly.web.annotation.ReturnTemplateOnError;
+import app.logly.web.annotation.SID;
 import app.logly.web.form.LoginForm;
 import app.logly.web.form.RegisterForm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +19,13 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -100,10 +101,11 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(@SessionAttribute(name = "id") Long id) {
+    public String home(@SID Long id, Model model) {
         // TODO: 세션 매니저에서 조회하는 인터셉터 구현
-
         Member member = memberService.findById(id).orElseThrow();
+
+        model.addAttribute("member", member);
         return "home";
     }
 
