@@ -19,11 +19,13 @@ public class AuthService {
         return memberService.save(member);
     }
 
-    public void authenticate(String username, String password) {
+    public Member authenticate(String username, String password) {
         Member member = memberService.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("회원을 찾을 수 없습니다."));
 
         validatePassword(password, member.getPassword());
+
+        return member;
     }
 
     private void validatePassword(String rawPassword, String encryptedPassword) {

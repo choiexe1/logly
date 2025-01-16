@@ -8,13 +8,13 @@ import app.logly.exception.PasswordMismatchException;
 import app.logly.exception.UserNotFoundException;
 import app.logly.exception.UsernameInUsedException;
 import app.logly.service.AuthService;
+import app.logly.service.MemberService;
 import app.logly.web.SessionManager;
 import app.logly.web.annotation.ReturnTemplateOnError;
 import app.logly.web.form.LoginForm;
 import app.logly.web.form.RegisterForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class HomeController {
     private final AuthService authService;
+    private final MemberService memberService;
 
     @GetMapping("/login")
     public String loginView(@ModelAttribute("form") LoginForm form) {
@@ -45,9 +47,13 @@ public class HomeController {
                         BindingResult bindingResult) {
         String username = form.username();
         String password = form.password();
-
         try {
-            authService.authenticate(username, password);
+            Member member = authService.authenticate(username, password);
+
+            HttpSession session = request.getSession();
+            SessionManager.renewSession(member.getId(), session);
+
+            return "redirect:/";
         } catch (UserNotFoundException e) {
             bindingResult.rejectValue("username", UserNotFoundException.ERROR_CODE);
             return "login";
@@ -55,25 +61,12 @@ public class HomeController {
             bindingResult.rejectValue("password", InvalidPasswordException.ERROR_CODE);
             return "login";
         }
-
-        Optional<HttpSession> session = SessionManager.get(username);
-
-        if (session.isPresent()) {
-            session.get().invalidate();
-            SessionManager.remove(username);
-        }
-
-        SessionManager.set(username, request.getSession());
-
-        return "redirect:/";
     }
 
     @GetMapping("/register")
     public String registerView(@ModelAttribute("form") RegisterForm form) {
         return "register";
     }
-
-    // TODO: 로그인 후에 인터셉터로 세션 검증
 
     @ReturnTemplateOnError("register")
     @PostMapping("/register")
@@ -92,6 +85,8 @@ public class HomeController {
 
         try {
             authService.register(member);
+            redirectAttributes.addAttribute("registered", true);
+            return "redirect:/login";
         } catch (UsernameInUsedException e) {
             bindingResult.rejectValue("username", UsernameInUsedException.ERROR_CODE);
             return "register";
@@ -102,9 +97,14 @@ public class HomeController {
             bindingResult.rejectValue("email", EmailInUsedException.ERROR_CODE);
             return "register";
         }
+    }
 
-        redirectAttributes.addFlashAttribute("registered", true);
-        return "redirect:/login";
+    @GetMapping("/")
+    public String home(@SessionAttribute(name = "id") Long id) {
+        // TODO: 세션 매니저에서 조회하는 인터셉터 구현
+
+        Member member = memberService.findById(id).orElseThrow();
+        return "home";
     }
 
     @GetMapping("/terms")
