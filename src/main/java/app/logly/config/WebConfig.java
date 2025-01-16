@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationInterceptor())
                 .order(1)
-                .excludePathPatterns("/login", "/register", "/css/*", "logly.ico");
+                .excludePathPatterns("/login", "/register", "/css/*", "logly.ico", "/terms");
     }
 
     @Override
