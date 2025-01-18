@@ -3,6 +3,7 @@ server:
   servlet:
     session:
       tracking-modes: cookie
+      timeout: 10m
 spring:
   config:
     import: env.properties
