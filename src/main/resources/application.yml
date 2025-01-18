@@ -30,3 +30,7 @@ spring:
   h2:
     console:
       enabled: true
+  thymeleaf:
+    cache: true
+  profiles:
+    active:
