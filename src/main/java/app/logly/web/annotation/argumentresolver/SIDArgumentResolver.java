@@ -1,6 +1,5 @@
 package app.logly.web.annotation.argumentresolver;
 
-import app.logly.web.SessionManager;
 import app.logly.web.annotation.SID;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +21,6 @@ public class SIDArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
         HttpSession session = request.getSession(false);
-        return (Long) session.getAttribute(SessionManager.SESSION_MEMBER_ID);
+        return (Long) session.getAttribute("id");
     }
 }

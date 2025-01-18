@@ -9,10 +9,9 @@ import app.logly.exception.UserNotFoundException;
 import app.logly.exception.UsernameInUsedException;
 import app.logly.exception.VerificationCodeNotMatchException;
 import app.logly.helper.mail.MailHelper;
-import app.logly.helper.verification.VerificationHelper;
 import app.logly.service.AuthService;
 import app.logly.service.MemberService;
-import app.logly.web.SessionManager;
+import app.logly.service.VerificationService;
 import app.logly.web.annotation.ReturnTemplateOnError;
 import app.logly.web.annotation.SID;
 import app.logly.web.form.LoginForm;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -40,10 +40,16 @@ public class HomeController {
     private final AuthService authService;
     private final MemberService memberService;
     private final MailHelper mailHelper;
-    private final VerificationHelper verificationHelper;
+    private final VerificationService verificationService;
 
     @GetMapping("/login")
-    public String loginView(@ModelAttribute("form") LoginForm form) {
+    public String loginView(HttpServletRequest request, @ModelAttribute("form") LoginForm form) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null && session.getAttribute("id") != null) {
+            return "redirect:/";
+        }
+
         return "login";
     }
 
@@ -58,7 +64,8 @@ public class HomeController {
             Member member = authService.authenticate(username, password);
 
             HttpSession session = request.getSession();
-            SessionManager.renewSession(member.getId(), session);
+            session.setAttribute("id", member.getId());
+
             if (member.isEmailVerified()) {
                 return "redirect:/";
             } else {
@@ -92,9 +99,8 @@ public class HomeController {
         }
 
         try {
-            verificationHelper.validateVerificationCodeMatch(id, form.merge());
+            verificationService.verify(id, form.merge());
             authService.verifyEmail(id);
-            verificationHelper.removeVerificationCode(id);
         } catch (VerificationCodeNotMatchException e) {
             bindingResult.reject(VerificationCodeNotMatchException.ERROR_CODE);
             return "verify";
@@ -107,8 +113,7 @@ public class HomeController {
     public String verifyResend(@SID Long id, RedirectAttributes redirectAttributes) {
         Member member = memberService.findByIdOrThrow(id);
 
-        verificationHelper.removeVerificationCode(id);
-        int verificationCode = verificationHelper.generateVerificationCode(member.getId());
+        int verificationCode = verificationService.regenerateVerificationCode(member.getId());
         mailHelper.sendVerifyCode(member.getEmail(), verificationCode);
 
         redirectAttributes.addFlashAttribute("resend", true);
@@ -117,7 +122,12 @@ public class HomeController {
     }
 
     @GetMapping("/register")
-    public String registerView(@ModelAttribute("form") RegisterForm form) {
+    public String registerView(HttpServletRequest request, @ModelAttribute("form") RegisterForm form) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("id") != null) {
+            return "redirect:/";
+        }
+
         return "register";
     }
 
@@ -139,7 +149,8 @@ public class HomeController {
         try {
             authService.register(member);
 
-            int verificationCode = verificationHelper.generateVerificationCode(member.getId());
+//            int verificationCode = verificationHelper.generateVerificationCode(member.getId());
+            int verificationCode = verificationService.generateVerificationCode(member.getId());
             mailHelper.sendVerifyCode(form.email(), verificationCode);
 
             redirectAttributes.addAttribute("registered", true);
@@ -157,7 +168,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(@SID Long id, Model model) {
+    public String home(@SessionAttribute("id") Long id, Model model) {
         Member member = memberService.findById(id).orElseThrow();
 
         model.addAttribute("member", member);

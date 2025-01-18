@@ -1,7 +1,5 @@
 package app.logly.web.interceptor;
 
-import static app.logly.web.SessionManager.SESSION_MEMBER_ID;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -14,7 +12,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throws Exception {
         HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute(SESSION_MEMBER_ID) == null) {
+        if (session == null || session.getAttribute("id") == null) {
             response.sendRedirect("/login");
             return false;
         }
