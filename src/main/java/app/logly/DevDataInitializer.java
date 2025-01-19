@@ -17,7 +17,7 @@ public class DevDataInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void memberInit() {
         Member member = Member
-                .of("test", "test", "choiexe1@gmail.com",
+                .of("test", "test", "test@test.com",
                         "test", false);
 
         member.setEmailVerified(true);
