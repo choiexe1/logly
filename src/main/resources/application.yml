@@ -31,6 +31,6 @@ spring:
     console:
       enabled: true
   thymeleaf:
-    cache: true
+    cache: false
   profiles:
-    active:
+    active: dev
