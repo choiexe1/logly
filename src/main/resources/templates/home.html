@@ -3,7 +3,12 @@
 <head th:replace="~{fragments/head :: head('홈')}">
 </head>
 <body>
-    <aside th:replace="~{fragments/sidebar}"></aside>
-    <footer th:replace="~{fragments/footer}"></footer>
+    <main class="flex flex-col min-h-screen">
+        <div class="flex flex-1">
+            <aside th:replace="~{fragments/sidebar}" class="w-64 flex-shrink-0 bg-gray-50 border-r"></aside>
+            <section th:replace="~{fragments/logs}" class="flex-grow"></section>
+        </div>
+        <footer th:replace="~{fragments/footer}" class="bg-gray-100"></footer>
+    </main>
 </body>
 </html>
