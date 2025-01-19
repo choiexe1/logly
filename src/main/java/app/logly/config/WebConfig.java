@@ -1,11 +1,10 @@
 package app.logly.config;
 
-import app.logly.web.annotation.argumentresolver.SIDArgumentResolver;
 import app.logly.web.interceptor.AuthenticationInterceptor;
+import app.logly.web.interceptor.CommonModelInterceptor;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,11 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AuthenticationInterceptor())
                 .order(1)
                 .excludePathPatterns(mergeLists(STATICS, PUBLICS));
-    }
-
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new SIDArgumentResolver());
+        registry.addInterceptor(new CommonModelInterceptor())
+                .order(2)
+                .excludePathPatterns(mergeLists(STATICS, PUBLICS));
     }
 
     @Override
