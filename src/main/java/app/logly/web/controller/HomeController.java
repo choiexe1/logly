@@ -13,7 +13,6 @@ import app.logly.service.AuthService;
 import app.logly.service.MemberService;
 import app.logly.service.VerificationService;
 import app.logly.web.annotation.ReturnTemplateOnError;
-import app.logly.web.annotation.SID;
 import app.logly.web.form.LoginForm;
 import app.logly.web.form.RegisterForm;
 import app.logly.web.form.VerificationCodeForm;
@@ -82,7 +81,8 @@ public class HomeController {
     }
 
     @GetMapping("/verify")
-    public String verifyView(Model model, @SID Long id, @ModelAttribute("form") VerificationCodeForm form) {
+    public String verifyView(Model model, @SessionAttribute("id") Long id,
+                             @ModelAttribute("form") VerificationCodeForm form) {
         Member member = memberService.findByIdOrThrow(id);
         model.addAttribute("email", member.getEmail());
 
@@ -90,7 +90,7 @@ public class HomeController {
     }
 
     @PostMapping("/verify")
-    public String verify(@SID Long id, @Validated @ModelAttribute("form") VerificationCodeForm form,
+    public String verify(@SessionAttribute("id") Long id, @Validated @ModelAttribute("form") VerificationCodeForm form,
                          BindingResult bindingResult) {
 
         if (form.first() == null || form.second() == null || form.third() == null || form.fourth() == null) {
@@ -110,7 +110,7 @@ public class HomeController {
     }
 
     @GetMapping("re-send")
-    public String verifyResend(@SID Long id, RedirectAttributes redirectAttributes) {
+    public String verifyResend(@SessionAttribute("id") Long id, RedirectAttributes redirectAttributes) {
         Member member = memberService.findByIdOrThrow(id);
 
         int verificationCode = verificationService.regenerateVerificationCode(member.getId());
