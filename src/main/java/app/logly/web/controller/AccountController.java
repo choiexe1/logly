@@ -29,7 +29,7 @@ public class AccountController {
         form.setNickname(member.getNickname());
         form.setEmail(member.getEmail());
 
-        return "accounts/account";
+        return "accounts/index";
     }
 
     @PostMapping
@@ -42,9 +42,9 @@ public class AccountController {
             memberService.update(id, form.getNickname());
         } catch (NicknameInUsedException e) {
             bindingResult.rejectValue("nickname", NicknameInUsedException.ERROR_CODE);
-            return "accounts/account";
+            return "accounts/index";
         }
-        
+
         return "redirect:/accounts";
     }
 }
