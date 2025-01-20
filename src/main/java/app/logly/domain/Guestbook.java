@@ -15,17 +15,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "logs")
+@Table(name = "guest_books")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Log {
+public class Guestbook {
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "host_id")
+    private Member host;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guest_id")
+    private Member guest;
 
     @Column(nullable = false)
     private String content;
