@@ -42,11 +42,13 @@ public class HomeController {
     private final VerificationService verificationService;
 
     @GetMapping("/login")
-    public String loginView(HttpServletRequest request, @ModelAttribute("form") LoginForm form) {
+    public String loginView(HttpServletRequest request, @ModelAttribute("form") LoginForm form,
+                            RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute("id") != null) {
-            return "redirect:/";
+            redirectAttributes.addAttribute("id", session.getAttribute("id"));
+            return "redirect:/guestbook/{id}";
         }
 
         return "login";
@@ -56,7 +58,7 @@ public class HomeController {
     @PostMapping("/login")
     public String login(HttpServletRequest request,
                         @Validated @ModelAttribute("form") LoginForm form,
-                        BindingResult bindingResult) {
+                        BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         String username = form.username();
         String password = form.password();
         try {
@@ -66,7 +68,8 @@ public class HomeController {
             session.setAttribute("id", member.getId());
 
             if (member.isEmailVerified()) {
-                return "redirect:/";
+                redirectAttributes.addAttribute("id", member.getId());
+                return "redirect:/guestbook/{id}";
             } else {
                 return "redirect:/verify";
             }
@@ -91,7 +94,7 @@ public class HomeController {
 
     @PostMapping("/verify")
     public String verify(@SessionAttribute("id") Long id, @Validated @ModelAttribute("form") VerificationCodeForm form,
-                         BindingResult bindingResult) {
+                         BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (form.first() == null || form.second() == null || form.third() == null || form.fourth() == null) {
             bindingResult.reject(VerificationCodeNotMatchException.ERROR_CODE);
@@ -106,7 +109,8 @@ public class HomeController {
             return "verify";
         }
 
-        return "redirect:/";
+        redirectAttributes.addAttribute("id", id);
+        return "redirect:/guestbook/{id}";
     }
 
     @GetMapping("re-send")
@@ -122,10 +126,12 @@ public class HomeController {
     }
 
     @GetMapping("/register")
-    public String registerView(HttpServletRequest request, @ModelAttribute("form") RegisterForm form) {
+    public String registerView(HttpServletRequest request, @ModelAttribute("form") RegisterForm form,
+                               RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("id") != null) {
-            return "redirect:/";
+            redirectAttributes.addAttribute("id", session.getAttribute("id"));
+            return "redirect:/guestbook/{id}";
         }
 
         return "register";
@@ -164,11 +170,6 @@ public class HomeController {
             bindingResult.rejectValue("email", EmailInUsedException.ERROR_CODE);
             return "register";
         }
-    }
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
     }
 
     @PostMapping("/logout")
