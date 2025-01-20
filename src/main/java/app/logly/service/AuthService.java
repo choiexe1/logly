@@ -4,6 +4,7 @@ import app.logly.domain.Member;
 import app.logly.exception.InvalidPasswordException;
 import app.logly.exception.UserNotFoundException;
 import app.logly.helper.encryption.EncryptionHelper;
+import java.util.random.RandomGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,10 @@ public class AuthService {
     public Member register(Member member) {
         memberService.validateExistsMember(member.getUsername(), member.getNickname(), member.getEmail());
         member.setPassword(encryptionHelper.hash(member.getPassword()));
+
+        int randomNumber = RandomGenerator.of("Random").nextInt(10);
+        member.setAvatarNumber(randomNumber);
+
         return memberService.save(member);
     }
 
