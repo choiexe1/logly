@@ -2,7 +2,6 @@ package app.logly.config;
 
 import app.logly.service.MemberService;
 import app.logly.web.interceptor.AuthenticationInterceptor;
-import app.logly.web.interceptor.CommonModelInterceptor;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +22,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationInterceptor())
                 .order(1)
-                .excludePathPatterns(mergeLists(STATICS, PUBLICS));
-        registry.addInterceptor(new CommonModelInterceptor(memberService))
-                .order(2)
                 .excludePathPatterns(mergeLists(STATICS, PUBLICS));
     }
 
