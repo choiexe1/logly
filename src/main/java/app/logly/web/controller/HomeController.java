@@ -47,8 +47,8 @@ public class HomeController {
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute("id") != null) {
-            redirectAttributes.addAttribute("id", session.getAttribute("id"));
-            return "redirect:/guestbook/{id}";
+            redirectAttributes.addAttribute("nickname", session.getAttribute("nickname"));
+            return "redirect:/guestbook/@{nickname}";
         }
 
         return "login";
@@ -66,10 +66,11 @@ public class HomeController {
 
             HttpSession session = request.getSession();
             session.setAttribute("id", member.getId());
+            session.setAttribute("nickname", member.getNickname());
 
             if (member.isEmailVerified()) {
-                redirectAttributes.addAttribute("id", member.getId());
-                return "redirect:/guestbook/{id}";
+                redirectAttributes.addAttribute("nickname", member.getNickname());
+                return "redirect:/guestbook/@{nickname}";
             } else {
                 return "redirect:/verify";
             }
@@ -93,7 +94,9 @@ public class HomeController {
     }
 
     @PostMapping("/verify")
-    public String verify(@SessionAttribute("id") Long id, @Validated @ModelAttribute("form") VerificationCodeForm form,
+    public String verify(@SessionAttribute("id") Long id,
+                         @SessionAttribute("nickname") String nickname,
+                         @Validated @ModelAttribute("form") VerificationCodeForm form,
                          BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (form.first() == null || form.second() == null || form.third() == null || form.fourth() == null) {
@@ -109,8 +112,8 @@ public class HomeController {
             return "verify";
         }
 
-        redirectAttributes.addAttribute("id", id);
-        return "redirect:/guestbook/{id}";
+        redirectAttributes.addAttribute("nickname", nickname);
+        return "redirect:/guestbook/@{nickname}";
     }
 
     @GetMapping("re-send")
@@ -126,12 +129,13 @@ public class HomeController {
     }
 
     @GetMapping("/register")
-    public String registerView(HttpServletRequest request, @ModelAttribute("form") RegisterForm form,
-                               RedirectAttributes redirectAttributes) {
+    public String registerView(
+            HttpServletRequest request, @ModelAttribute("form") RegisterForm form,
+            RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("id") != null) {
-            redirectAttributes.addAttribute("id", session.getAttribute("id"));
-            return "redirect:/guestbook/{id}";
+            redirectAttributes.addAttribute("nickname", session.getAttribute("nickname"));
+            return "redirect:/guestbook/@{nickname}";
         }
 
         return "register";

@@ -34,11 +34,26 @@ public class Guestbook {
     @Column(nullable = false)
     private String content;
 
-    private boolean isAnonymous;
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static Guestbook of(String content) {
+        Guestbook guestbook = new Guestbook();
+        guestbook.content = content;
+        guestbook.createdAt = LocalDateTime.now();
+        return guestbook;
+    }
+
+    public void setHost(Member host) {
+        this.host = host;
+        host.getReceivedGuestbook().add(this);
+    }
+
+    public void setGuest(Member guest) {
+        this.guest = guest;
+        host.getPostedGuestbook().add(this);
+    }
 
     @PreUpdate
     private void setUpdatedAt() {

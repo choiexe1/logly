@@ -1,5 +1,6 @@
 package app.logly.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,8 +51,11 @@ public class Member {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "member", orphanRemoval = true)
-    private List<Log> logs = new ArrayList<>();
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Guestbook> receivedGuestbook = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Guestbook> postedGuestbook = new ArrayList<>();
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
