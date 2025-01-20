@@ -149,7 +149,6 @@ public class HomeController {
         try {
             authService.register(member);
 
-//            int verificationCode = verificationHelper.generateVerificationCode(member.getId());
             int verificationCode = verificationService.generateVerificationCode(member.getId());
             mailHelper.sendVerifyCode(form.email(), verificationCode);
 
@@ -168,11 +167,16 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(@SessionAttribute("id") Long id, Model model) {
-        Member member = memberService.findById(id).orElseThrow();
-
-        model.addAttribute("member", member);
+    public String home() {
         return "home";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+
+        return "redirect:/login";
     }
 
     @GetMapping("/terms")

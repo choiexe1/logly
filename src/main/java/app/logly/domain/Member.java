@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -33,14 +34,26 @@ public class Member {
     @Setter
     private String password;
 
+    @Column(nullable = false)
+    @Setter
+    private int avatarNumber;
+
     @Setter
     private boolean emailVerified;
-    
+
     private boolean subscribeNewsletter;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
 
     public static Member of(String username, String nickname, String email, String password,
                             Boolean subscribeNewsletter) {
@@ -54,5 +67,10 @@ public class Member {
         member.emailVerified = false;
 
         return member;
+    }
+
+    @PreUpdate
+    private void setUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
