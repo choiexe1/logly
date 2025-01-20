@@ -1,6 +1,5 @@
 package app.logly.config;
 
-import app.logly.service.MemberService;
 import app.logly.web.interceptor.AuthenticationInterceptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +15,12 @@ public class WebConfig implements WebMvcConfigurer {
     private static final List<String> STATICS = List.of("/css/**", "logly.ico", "/terms");
     private static final List<String> PUBLICS = List.of("/login", "/register");
 
-    private final MemberService memberService;
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthenticationInterceptor())
                 .order(1)
-                .excludePathPatterns(mergeLists(STATICS, PUBLICS));
+                .excludePathPatterns(mergeLists(STATICS, PUBLICS))
+                .addPathPatterns("/avatar/**");
     }
 
     @Override
