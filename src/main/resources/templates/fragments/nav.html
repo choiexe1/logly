@@ -17,9 +17,8 @@
             <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                   d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
         </svg>
-        <span class="mx-4 font-medium">내가 작성한 방명록</span>
+        <span class="mx-4 font-medium">내가 쓴 방명록</span>
     </a>
-
 
     <a class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 transition"
        th:href="@{/accounts}" th:classappend="${currentUri.equals('/accounts') ? 'bg-gray-100' : ''}">
@@ -30,15 +29,6 @@
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span class="mx-4 font-medium">내 계정</span>
-    </a>
-
-    <a class="flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 transition"
-       href="#">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5V7M15 11V13M15 17V19M5 5C3.89543 5 3 5.89543 3 7V10C4.10457 10 5 10.8954 5 12C5 13.1046 4.10457 14 3 14V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10V7C21 5.89543 20.1046 5 19 5H5Z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="mx-4 font-medium">Tickets</span>
     </a>
 
     <form class="flex items-center px-4 py-2 text-gray-700 rounded-lg inline-block hover:bg-blue-100 transition"

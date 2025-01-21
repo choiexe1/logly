@@ -2,12 +2,93 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <aside th:fragment="sidebar"
        class="flex flex-col w-64 h-screen px-4 pt-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l">
-    <div class="flex flex-col items-center mt-6 -mx-2">
-        <img class="object-cover w-24 h-24 mx-2 rounded-full"
-             th:src="@{/avatar/{avatarNumber}.webp(avatarNumber=${member.avatarNumber})}"
-             alt="avatar">
-        <h4 class="mx-2 mt-2 font-medium text-gray-800" th:text="'@' + ${member.nickname}">John Doe</h4>
-        <p class="mx-2 mt-1 text-sm font-medium text-gray-600" th:text="${member.email}">john@example.com</p>
+    <div x-data="{ isOpen: false, currentStep: 1, avatars: [] }"
+         x-init="avatars = [...Array(10).keys()].map(i => `/avatar/${i}.webp`)"
+         class="relative flex justify-center">
+
+        <div class="flex flex-col items-center mt-6 -mx-2">
+            <div class="relative">
+                <img class="object-cover w-24 h-24 mx-2 rounded-full"
+                     th:src="@{/avatar/{avatarNumber}.webp(avatarNumber=${member.avatarNumber})}"
+                     alt="avatar">
+                <!-- Configuration Icon -->
+                <button @click="isOpen = true"
+                        class="absolute bottom-0 left-0 p-1 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-5 w-5 text-gray-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </button>
+            </div>
+            <h4 class="mx-2 mt-2 font-medium text-gray-800" th:text="'@' + ${member.nickname}">John Doe</h4>
+            <p class="mx-2 mt-1 text-sm font-medium text-gray-600" th:text="${member.email}">john@example.com</p>
+        </div>
+
+        <!-- Modal -->
+        <div x-show="isOpen"
+             style="display: none"
+             x-transition:enter="transition duration-300 ease-out"
+             x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+             x-transition:leave="transition duration-150 ease-in"
+             x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+             x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+             class="fixed inset-0 z-10 overflow-y-auto"
+             aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl m:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <!-- Profile Avatars -->
+                    <div class="relative overflow-hidden">
+                        <div class="flex transition-transform duration-500"
+                             :style="{ transform: `translateX(-${(currentStep - 1) * 100}%)` }">
+                            <!-- Step 1 -->
+                            <template x-for="chunk in [avatars.slice(0, 5), avatars.slice(5, 10)]">
+                                <div class="flex-shrink-0 w-full grid grid-cols-5 gap-4">
+                                    <template x-for="avatar in chunk">
+                                        <form method="POST" action="/accounts/change-profile" class="inline-block">
+                                            <input type="hidden" name="avatar" :value="avatar">
+                                            <button type="submit" class="group">
+                                                <img :src="avatar" alt="Avatar"
+                                                     class="w-16 h-16 rounded-full border-2 border-gray-200 group-hover:border-blue-500">
+                                            </button>
+                                        </form>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Buttons -->
+                    <div class="mt-4 flex justify-between">
+                        <button @click="currentStep = Math.max(1, currentStep - 1)"
+                                class="px-4 py-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                            Previous
+                        </button>
+                        <button @click="currentStep = Math.min(Math.ceil(avatars.length / 5), currentStep + 1)"
+                                class="px-4 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+                            Next
+                        </button>
+                    </div>
+
+                    <!-- Close Button -->
+                    <button @click="isOpen = false"
+                            class="mt-4 w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="flex flex-col justify-between flex-1 mt-6">

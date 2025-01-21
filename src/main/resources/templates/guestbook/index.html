@@ -8,35 +8,52 @@
             <aside th:replace="~{fragments/sidebar}" class="w-64 flex-shrink-0 bg-gray-50 border-r"></aside>
             <section class="flex-1 overflow-y-auto">
                 <div class="max-w-2xl mx-auto p-4">
-                    <div class="mb-4">
-                        <form th:object="${form}" method="POST" th:action>
+
+                    <th:block th:unless="${currentUri.endsWith('@' + member.nickname)}">
+                        <div class="mb-4">
+                            <form th:object="${form}" method="POST" th:action>
                         <textarea th:errorclass="border-red-500" th:field="*{content}"
                                   class="w-full p-2 border rounded-lg resize-none"
                                   placeholder="무슨 말을 남기고 싶나요?"></textarea>
-                            <p th:errors="*{content}" class="error"></p>
-                            <div class="mt-2 flex justify-between items-center">
-                                <div>
-                                    <button type="button" class="p-2 rounded-full bg-blue-100 text-blue-500 mr-2">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="p-2 rounded-full bg-blue-100 text-blue-500">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                        </svg>
+                                <p th:errors="*{content}" class="error"></p>
+                                <div class="mt-2 flex justify-between items-center">
+                                    <div>
+                                        <button type="button" class="p-2 rounded-full bg-blue-100 text-blue-500 mr-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                        <button type="button" class="p-2 rounded-full bg-blue-100 text-blue-500">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-full">작성
                                     </button>
                                 </div>
-                                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-full">작성</button>
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
+                    </th:block>
 
-                    <div class="space-y-4">
+                    <th:block th:if="${currentUri.endsWith('@' + member.nickname) && guestbooks.size() == 0}">
+                        <h1 class="text-2xl text-gray-700 text-center font-semibold mt-16">아직 작성된 방명록이
+                            없네요. <span class="text-2xl">🥺</span></h1>
+                        <p class="text-gray-500 my-4 text-center">공유하고 싶은 지인에게 링크를 공유해보세요! </p>
+                    </th:block>
+
+                    <th:block th:if="${!currentUri.endsWith('@' + member.nickname) && guestbooks.size() == 0}">
+                        <h1 class="text-2xl text-gray-700 text-center font-semibold mt-16">아직 작성된 방명록이
+                            없네요. <span class="text-2xl">🥺</span></h1>
+                        <p class="text-gray-500 my-4 text-center">첫 인삿말을 남겨보세요!</p>
+                    </th:block>
+
+
+                    <div th:unless="${guestbooks.size() == 0}" class="space-y-4">
                         <div th:each="b : ${guestbooks}" class="bg-white p-4 rounded-lg shadow">
                             <div class="flex items-center mb-2">
                                 <img class="w-12 h-12 rounded-full mr-2"

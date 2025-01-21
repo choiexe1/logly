@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
@@ -46,5 +47,16 @@ public class AccountController {
         }
 
         return "redirect:/accounts";
+    }
+
+    @PostMapping("/change-profile")
+    public String changeProfile(@RequestParam("avatar") String avatar, @SessionAttribute("id") Long id,
+                                @SessionAttribute("nickname") String nickname) {
+
+        String numberStr = avatar.replaceAll("[^0-9]", "");
+        int number = Integer.parseInt(numberStr);
+
+        memberService.updateProfileImage(id, number);
+        return "redirect:/guestbook/@" + nickname;
     }
 }

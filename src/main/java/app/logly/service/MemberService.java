@@ -53,6 +53,14 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateProfileImage(Long id, int avatar) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("회원을 찾을 수 없습니다."));
+
+        member.setAvatarNumber(avatar);
+    }
+
+    @Transactional
     public void update(Long id, String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
             throw new NicknameInUsedException("이미 사용중인 닉네임입니다.");

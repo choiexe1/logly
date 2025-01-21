@@ -22,6 +22,12 @@ public class DevDataInitializer {
 
         member.setEmailVerified(true);
 
+        Member member2 = Member
+                .of("test1", "test1", "test1@test.com",
+                        "test1", false);
+        member2.setEmailVerified(true);
+
         authService.register(member);
+        authService.register(member2);
     }
 }

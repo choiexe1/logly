@@ -19,7 +19,7 @@
                                      th:src="@{/avatar/{avatarNumber}.webp(avatarNumber=${b.guest.avatarNumber})}"
                                      alt="avatar">
                                 <div>
-                                    <a th:href="@{/guestbook/@{nickname}(nickname=${b.guest.nickname})}"
+                                    <a th:href="@{/guestbook/@{nickname}(nickname=${b.host.nickname})}"
                                        class="font-bold block"
                                        th:text="'@' + ${b.host.nickname} + '에게'">John Doe</a>
 
